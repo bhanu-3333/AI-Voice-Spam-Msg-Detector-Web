@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Scam Message Detector</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #020617;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .box {
+      background: #0f172a;
+      padding: 30px;
+      border-radius: 14px;
+      width: 500px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 150px;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 14px;
+      resize: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      background: #22c55e;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .advice-btn {
+      background: #3b82f6;
+    }
+
+    .result {
+      margin-top: 18px;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .fake { color: #ef4444; }
+    .safe { color: #22c55e; }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2>📧 AI Scam Message Detector</h2>
+
+  <textarea id="email" placeholder="Paste email / message here..."></textarea>
+
+  <button onclick="checkEmail()">Check Message</button>
+
+  <div class="result" id="result"></div>
+
+  <button class="advice-btn" id="adviceBtn" onclick="showAdvice()" style="display:none;">
+    What should I do?
+  </button>
+</div>
+
+<script>
+/* 🔊 VOICE FUNCTION */
+function speak(text) {
+  window.speechSynthesis.cancel();
+  const msg = new SpeechSynthesisUtterance(text);
+  msg.lang = "en-US";
+  msg.rate = 0.9;
+  window.speechSynthesis.speak(msg);
+}
+
+let lastResultType = ""; // "fake" or "safe"
+
+/* 🧠 MAIN FUNCTION */
+async function checkEmail() {
+  const emailText = document.getElementById("email").value;
+  const lowerText = emailText.toLowerCase();
+  const resultBox = document.getElementById("result");
+  const adviceBtn = document.getElementById("adviceBtn");
+
+  adviceBtn.style.display = "none";
+  resultBox.innerHTML = "🔍 Analyzing message...";
+
+  if (!emailText.trim()) {
+    resultBox.innerHTML = "⚠️ Please enter a message.";
+    return;
+  }
+
+  const response = await fetch("/predict", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `email=${encodeURIComponent(emailText)}`
+  });
+
+  const data = await response.json();
+  const res = data[0];
+  const confidence = Math.round(res.score * 100);
+
+  /* 🔴 SCAM */
+  if (res.label === "LABEL_1") {
+    lastResultType = "fake";
+
+    speak("Warning! This message looks like a scam. Do not click links or make payments.");
+
+    resultBox.innerHTML = `
+      🚨 <b class="fake">Scam Alert!</b><br>
+      This message is likely <b>FAKE</b>.<br>
+      🔥 Risk Level: ${confidence}%
+    `;
+
+    adviceBtn.style.display = "block";
+  }
+
+  /* 🟢 SAFE */
+  else {
+    lastResultType = "safe";
+
+    speak("This message looks safe. No immediate risk detected.");
+
+    resultBox.innerHTML = `
+      ✅ <b class="safe">Looks Safe</b><br>
+      This message appears legitimate.<br>
+      🟢 Risk Level: ${confidence}%
+    `;
+
+    adviceBtn.style.display = "block";
+  }
+}
+
+/* 📌 ADVICE BUTTON */
+function showAdvice() {
+  const resultBox = document.getElementById("result");
+
+  if (lastResultType === "fake") {
+    resultBox.innerHTML += `
+      <br><br><b>🛑 What should you do?</b><br>
+      • ❌ Do NOT click any links<br>
+      • ❌ Do NOT make payments<br>
+      • ❌ Do NOT share OTP or passwords<br>
+      • ✅ Delete or report the message
+    `;
+  } else if (lastResultType === "safe") {
+    resultBox.innerHTML += `
+      <br><br><b>ℹ️ General Safety Tips</b><br>
+      • ✅ Verify sender details<br>
+      • ✅ Be cautious with links<br>
+      • ✅ Keep personal info private
+    `;
+  }
+}
+</script>
+
+</body>
+</html>
