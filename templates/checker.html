@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Spam Checker</title>
+  <style>
+    body{
+      background:#020617;
+      color:white;
+      font-family:Arial;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+    }
+    .box{
+      background:#0f172a;
+      padding:30px;
+      border-radius:14px;
+      width:520px;
+    }
+    textarea{
+      width:100%;
+      height:120px;
+      padding:10px;
+      border-radius:10px;
+    }
+    button{
+      width:100%;
+      padding:12px;
+      margin-top:12px;
+      border:none;
+      border-radius:10px;
+      background:#22c55e;
+      font-size:16px;
+      cursor:pointer;
+    }
+    .advice-btn{
+      background:#3b82f6;
+    }
+    .fake{ color:#ef4444; }
+    .safe{ color:#22c55e; }
+    .result{ margin-top:15px; line-height:1.6; }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2>📧 Spam Checker</h2>
+
+  <textarea id="email" placeholder="Paste message here..."></textarea>
+
+  <button onclick="checkEmail()">Check Message</button>
+
+  <div class="result" id="result"></div>
+
+  <button class="advice-btn" id="nextBtn" onclick="showNextSteps()" style="display:none;">
+    What should I do next?
+  </button>
+</div>
+
+<script>
+let lastType = "";
+let detectedAdvice = [];
+
+/* 🔊 VOICE + ⌨️ TYPING */
+function speakAndType(text, css){
+  const box = document.getElementById("result");
+  box.innerHTML = "";
+
+  speechSynthesis.cancel();
+  const msg = new SpeechSynthesisUtterance(text);
+  msg.lang = "en-US";
+  speechSynthesis.speak(msg);
+
+  let i = 0;
+  const timer = setInterval(() => {
+    box.innerHTML = `<span class="${css}">${text.slice(0,i)}</span>`;
+    i++;
+    if(i > text.length) clearInterval(timer);
+  }, 35);
+}
+
+async function checkEmail(){
+  const text = document.getElementById("email").value;
+  const lower = text.toLowerCase();
+  const nextBtn = document.getElementById("nextBtn");
+
+  detectedAdvice = [];
+  nextBtn.style.display = "none";
+
+  if(!text.trim()){
+    document.getElementById("result").innerHTML = "⚠️ Enter a message";
+    return;
+  }
+
+  document.getElementById("result").innerHTML = "🔍 Analyzing...";
+
+  const res = await fetch("/predict", {
+    method:"POST",
+    headers:{ "Content-Type":"application/x-www-form-urlencoded" },
+    body:`email=${encodeURIComponent(text)}`
+  });
+
+  const data = await res.json();
+  const ai = data[0];
+  const risk = Math.round(ai.score * 100);
+
+  /* 🔍 CONTEXT DETECTION */
+  if(lower.includes("click") || lower.includes("link"))
+    detectedAdvice.push("❌ Do NOT click suspicious links");
+
+  if(lower.includes("pay") || lower.includes("fee"))
+    detectedAdvice.push("❌ Do NOT make any payment");
+
+  if(lower.includes("otp") || lower.includes("password"))
+    detectedAdvice.push("❌ Never share OTP or passwords");
+
+  if(lower.includes("bank") || lower.includes("account"))
+    detectedAdvice.push("❌ Banks never ask details through messages");
+
+  if(lower.includes("verify") || lower.includes("suspended"))
+    detectedAdvice.push("⚠️ Urgency tactic detected");
+
+  if(lower.includes("internship") || lower.includes("job"))
+    detectedAdvice.push("❌ Genuine internships never ask for money");
+
+  /* 🚨 SCAM */
+  if(ai.label === "LABEL_1"){
+    lastType = "fake";
+    speakAndType(
+      `Scam alert! This message looks dangerous. Risk level ${risk} percent.`,
+      "fake"
+    );
+    nextBtn.style.display = "block";
+  }
+  /* ✅ SAFE */
+  else{
+    lastType = "safe";
+    speakAndType(
+      "This message looks safe. No immediate risk detected.",
+      "safe"
+    );
+    nextBtn.style.display = "block";
+  }
+}
+
+/* 🧭 NEXT STEPS BUTTON */
+function showNextSteps(){
+  const box = document.getElementById("result");
+
+  if(lastType === "fake"){
+    box.innerHTML += `
+      <br><br><b>🛑 What should you do now?</b><br>
+      ${detectedAdvice.join("<br>")}<br>
+      • ✅ Delete the message<br>
+      • ✅ Report or block the sender
+    `;
+  } else {
+    box.innerHTML += `
+      <br><br><b>ℹ️ Safety Tips</b><br>
+      • Verify sender details<br>
+      • Be cautious with links<br>
+      • Keep personal data private
+    `;
+  }
+}
+</script>
+
+</body>
+</html>
