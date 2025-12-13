@@ -3,7 +3,6 @@ from transformers import pipeline
 
 app = Flask(__name__)
 
-# Load phishing detection model locally (one-time download)
 classifier = pipeline(
     "text-classification",
     model="cybersectony/phishing-email-detection-distilbert_v2.1"
@@ -13,14 +12,14 @@ classifier = pipeline(
 def home():
     return render_template("index.html")
 
+@app.route("/checker")
+def checker():
+    return render_template("checker.html")
+
 @app.route("/predict", methods=["POST"])
 def predict():
-    email_text = request.form.get("email")
-
-    if not email_text:
-        return jsonify({"error": "No email text provided"})
-
-    result = classifier(email_text)
+    text = request.form.get("email")
+    result = classifier(text)
     return jsonify(result)
 
 if __name__ == "__main__":
