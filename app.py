@@ -9,7 +9,6 @@ classifier = pipeline(
     "text-classification",
     model="cybersectony/phishing-email-detection-distilbert_v2.1"
 )
-
 @app.route("/")
 def home():
     return render_template("index.html")
