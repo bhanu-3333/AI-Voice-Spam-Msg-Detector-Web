@@ -5,25 +5,36 @@ The website provides clear visual alerts, context-based safety warnings, and eas
 
 🚀 Features
 
-✅ Detects Scam / Phishing / Safe messages using AI
+✅ AI-powered detection that identifies scam, phishing, and safe messages
 
-🚨 Clear Scam Alert and Safe Message indicators
+🚨 Clear visual alerts to instantly show whether a message is risky or safe
 
-🧠 Context-aware warnings, such as:
+🧠 Smart, context-aware warnings, including:
 
-❌ Don’t click suspicious links
+❌ Avoid clicking suspicious or unknown links
 
-❌ Don’t make payments
+❌ Never make payments based on messages
 
-❌ Banks never ask OTP or account details
+❌ Banks do not request OTPs or account details via SMS or email
 
-❌ Internship/job scams that demand money
+❌ Internship or job offers asking for money are likely scams
 
-🧭 User-friendly “What should I do next?” guidance
+🧭 Helpful “What should I do next?” guidance that explains the safest action to take
 
-🌐 Runs fully in the browser
+🌐 Fully browser-based application, no installation required
 
 🔗 Flask backend integrated with an AI NLP model
+
+
+## 📱 App Output (Mobile View)
+
+<div align="center">
+  <img src="screenshots/output1.png" width="70%" /><br><br>
+  <img src="screenshots/output2.png" width="70%" /><br><br>
+  <img src="screenshots/output3.png" width="70%" /><br><br>
+  <img src="screenshots/output4.png" width="70%" />
+</div>
+
 
 🧠 How It Works (Simple Explanation)
 
@@ -59,12 +70,7 @@ Flask
 
 Flask-CORS
 
-<div align="center">
-  <img src="screenshots/output1.png" width="24%" />
-  <img src="screenshots/output2.png" width="24%" />
-  <img src="screenshots/output3.png" width="24%" />
-  <img src="screenshots/output4.png" width="24%" />
-</div>
+
 
 
 ⚙️ Setup Instructions
