@@ -1,34 +1,120 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>AI Scam Detector</title>
+
+  <!-- ROBOTO FONT -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
   <style>
     body{
-      background:#020617;
-      color:white;
-      font-family:Arial;
+      margin:0;
+      height:100vh;
       display:flex;
       justify-content:center;
       align-items:center;
-      height:100vh;
-      text-align:center;
+      background:#f8fcfc;
+      font-family:"Roboto", sans-serif;
+      color:#0f172a;
     }
-    button{
-      padding:16px 28px;
+
+    .hero{
+      max-width:700px;
+      text-align:center;
+      padding:40px;
+    }
+
+    .badge{
+      display:inline-block;
+      padding:8px 16px;
+      background:#e6f6f6;
+      color:#0ea5a4;
+      border-radius:999px;
+      font-weight:500;
+      font-size:14px;
+      margin-bottom:20px;
+    }
+
+    h1{
+      font-size:46px;
+      font-weight:700;
+      margin-bottom:16px;
+      line-height:1.2;
+    }
+
+    p{
       font-size:18px;
+      color:#64748b;
+      margin-bottom:36px;
+    }
+
+    button{
+      padding:16px 34px;
+      font-size:18px;
+      font-weight:600;
       border:none;
-      border-radius:12px;
-      background:#22c55e;
+      border-radius:14px;
+      background:#0ea5a4;
+      color:white;
       cursor:pointer;
+      transition:all 0.25s ease;
+      box-shadow:0 20px 40px rgba(14,165,164,0.25);
+    }
+
+    button:hover{
+      transform:translateY(-3px);
+      background:#0891b2;
+      box-shadow:0 25px 50px rgba(14,165,164,0.35);
+    }
+
+    .features{
+      display:flex;
+      justify-content:center;
+      gap:24px;
+      margin-top:40px;
+      flex-wrap:wrap;
+    }
+
+    .feature{
+      background:white;
+      padding:18px 22px;
+      border-radius:14px;
+      font-size:14px;
+      color:#334155;
+      box-shadow:0 12px 30px rgba(15,23,42,0.08);
     }
   </style>
 </head>
+
 <body>
 
-<div>
-  <h1>🛡️ AI Spam & Scam Detector</h1>
-  <p>Check if a message is fake or safe</p>
-  <button onclick="location.href='/checker'">Open Spam Checker</button>
+<div class="hero">
+
+  <div class="badge">🛡️ AI Powered Security</div>
+
+  <h1>
+    AI Spam & Scam<br>
+    Detection Made Simple
+  </h1>
+
+  <p>
+    Instantly check messages, emails, and texts to know
+    whether they are safe or dangerous — before it’s too late.
+  </p>
+
+  <button onclick="location.href='/checker'">
+    Open Spam Checker →
+  </button>
+
+ <div class="features">
+  <div class="feature">Real-time voice-based alerts</div>
+  
+  <div class="feature">AI-powered risk analysis</div>
+  <div class="feature">Clear guidance to avoid scams</div>
+</div>
+
+
 </div>
 
 </body>
