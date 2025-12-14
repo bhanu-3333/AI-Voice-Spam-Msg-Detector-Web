@@ -1,15 +1,14 @@
 import os
-import requests
+
 from flask import Flask, render_template, request, jsonify
+from transformers import pipeline
 
 app = Flask(__name__)
 
-HF_API_URL = "https://router.huggingface.co/hf-inference/models/cybersectony/phishing-email-detection-distilbert_v2.1"
-HF_TOKEN = os.environ.get("HF_TOKEN")  # set in Render
-
-headers = {
-    "Authorization": f"Bearer {HF_TOKEN}"
-}
+classifier = pipeline(
+    "text-classification",
+    model="cybersectony/phishing-email-detection-distilbert_v2.1"
+)
 
 @app.route("/")
 def home():
@@ -22,15 +21,8 @@ def checker():
 @app.route("/predict", methods=["POST"])
 def predict():
     text = request.form.get("email")
-
-    response = requests.post(
-        HF_API_URL,
-        headers=headers,
-        json={"inputs": text}
-    )
-
-    return jsonify(response.json())
-
+    result = classifier(text)
+    return jsonify(result)
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
